@@ -14,7 +14,7 @@ library(tidyverse)
 
 **Overview:**
 
-In this lab, we will be creating a confidence interval for monthly precipitation in two time periods in three states in the Census's Pacific Division: California, Oregon, and Washington. The precipitation data comes from the same ERA5 dataset you used in Lab 2. We've summed the precipitation in January for each county over two twenty year time periods: 1950-1969 and 2005-2024. You'll be using those data to create confidence intervals at a state and county level.
+In this lab, we will be creating a confidence interval for monthly precipitation in two time periods in eleven states in the western U.S. The precipitation data comes from the same ERA5 dataset you used in Lab 2. We've summed the precipitation in January for each county over two twenty year time periods: 1950-1969 and 2005-2024. You'll be using those data to create confidence intervals at a state and county level.
 
 To load these data, load the csv file, which is included in the data folder:
 
@@ -22,7 +22,7 @@ To load these data, load the csv file, which is included in the data folder:
 era5_data<-read_csv("data/precip_uswest_era5.csv")
 ```
 
-This is a long format dataset including county identifiers, county population, median household income, and poverty rate. Census figures are based on the 2018-22 ACS. The last two columns (year and prcp_m) give the year and total precipitation in meters as a NetCDF file.
+This is a long format dataset including county identifiers, county population, median household income, and poverty rate. Census figures are based on the 2018-22 ACS. The last two columns (year, prcp_m, time_range) give the year and total precipitation in meters from the ERA5 NetCDF file, and two time ranges (1950-1969 and 2005-2024).
 
 The script used to create this dataframe is also provided in this repository ('lab3_dataprep'), along with rasters of the yearly mean total precipitation for Januaries in the two time periods of interest.
 
@@ -45,7 +45,7 @@ To start with, you need to calculate three statistics for precipitation in each 
 **Task 1** _Use `group_by` and `summarise` to calculate the mean, standard deviation, and sample size for precipitation in each state across the two time periods. When you're done, call the table using `kable`._
 
 ```{r Task1}
-#Code goes here
+
 ```
 
 With these statistics, you can now calculate the upper and lower bounds of a confidence interval around the mean precipitation in each state. Do that below.
@@ -53,7 +53,7 @@ With these statistics, you can now calculate the upper and lower bounds of a con
 **Task 2** _Using the formula for confidence intervals shown in class, calculate the upper and lower values for a confidence intervals for precipitation in each time period._
 
 ```{r Task2}
-#Code goes here. 
+
 ```
 
 There's a lot of numbers here, and they're small, which makes interpretation difficult. Using the code provided in class, create a ggplot graphic that visualizes these confidence intervals. You'll want to use `geom_point` and `geom_linerange` to do so. Use states as the y-axis and mean precipitation as the x axis. Vary the color and position of the dots and lines for the mean/CI by the `time_range` variable. Feel free to also experiment with axis labels/themes to make the graph more appealing and accessible.
@@ -61,50 +61,51 @@ There's a lot of numbers here, and they're small, which makes interpretation dif
 **Task 3** _Create a ggplot graphic as described above to show the confidence intervals for precipitation for each time range in each state._
 
 ```{r Task3}
-#Your code goes here.
+
 ```
 
 **Task 4** _Interpret the results of your analysis in tasks 2 and 3. What are three patterns you notice in the table and visualization showing your confidence intervals. How has precipitation changed in this region between these periods? Do confidence intervals for these two periods overlap? How are these states similar or different?_
 
-{Interpretation goes here.}
+{Your response here.}
 
 ### Part 2: Analyzing county data in Washington.
-In part 1, you ran a regional analysis at state level. What if you wanted to identify where populations might be negatively affected by precipitation changes within a state? In this section, you'll look at the changes in precipitation at county level in Washington to determine how many people live in areas where precipitation has declined notably in the last 70 years as well as two variables related to household income to assess economic vulnerability.
+In part 1, you ran a regional analysis at state level. What if you wanted to identify where populations might be negatively affected by precipitation changes within a state? In this section, you'll look at the changes in precipitation at county level in Washington to determine how many people live in areas where precipitation has declined notably in the last 70 years as well as two variables related to household income to assess economic vulnerability (pov_pop_pct and medinc).
 
+### Part 2a
 To start with, select only the counties in the ERA5 lab dataset that are in Washington (use the `st_name` variable), then repeat the steps you used for tasks 1 and 2 above, adjusting your code so that you create confidence intervals for **counties** instead of states. After creating that dataset, create another ggplot graph of those confidence intervals that you can compare to the state level data in Task 3.
 
 **Task 5** _Create confidence intervals between the two time periods of interest for January precipitation totals in Washington's counties. Call the head of your table with `kable` when you are done._
 
 ```{r Task5}
-#Your code goes here.
+
 ```
 
 **Task 6** _Visualize the confidence intervals for the county-level data you generated in task 5, using the same style as you did for Task 3 above._
 
 ```{r Task6}
-#Your code goes here.
+
 ```
 
 **Task 7**: _Compare the size of the error terms for your county level data to the error terms at state level that you calculated in Task 2. Are they bigger or smaller? Explain why the formula you used for calculating the error terms produced error terms of different sizes. How is this difference visible in your ggplot graphs?_
 
 {Your response here.}
 
-## Part 3: Interpreting the implications of precipitation changes
+## Part 2b: Interpreting the implications of precipitation changes
 
 Now that you've calculated these means and confidence intervals, let's identify where any differences in precipitation are located in the state and whom might be most affected by them. Start by calculating the difference in means between the two time periods from each state--how the mean monthly precipitation in 2005-2024 is different from the mean for 1950-1969. 
 
-**Task 8** _Transform the county data from task 6 into wide format so that the means for each time period are in the same row for each county. You may need to delete some existing variables to do so. Then calculate the change in precipitation between the time periods._
+**Task 8** _Transform the county data from task 6 into wide format so that the means for each time period are in the same row for each county. Then calculate the change in precipitation between the time periods. Join this table to the geopackage file that contains county boundaries and census data, making sure that you only have Washington counties included - use the geopackage `data/acsdata_cty_westreg.gpkg`. You may need to delete some existing variables to do so._
 
 ```{r Task8}
-#Your code goes here.
+
 ```
 
 Now you can map this variable to see where changes in precipitation are largest. You can use the `acsdata_cty_westreg` geopackage file to do this mapping.
 
-**Task 9** _Join your table from task 8 to the geopackage file that contains county boundaries and census data, making sure that you only have Washington counties included. Map the change in precipitation variable you created in task 8 using `tmap` using an appropriate classification scheme. For an extra challenge, add a title and move the legend to the outside of the map frame._
+**Task 9** _Map the change in precipitation variable you created in task 8 using `tmap` using an appropriate classification scheme. For an extra challenge, add a title and move the legend to the outside of the map frame._
 
 ```{r Task9}
-#Your code goes here.
+
 ```
 
 To see who is affected by drops in precipitation, create a dummy variable that flags any counties with a decline of 5 centimeters or more (0.05 meters) with a 1, labeling all other counties with a 0. Use group_by and summarise to do the following:
@@ -112,10 +113,10 @@ To see who is affected by drops in precipitation, create a dummy variable that f
 * Count the total population in each of these two county groups.
 * Calculate the mean value for median income and poverty rate in these two groups.
 
-**Task 10** _Create a dummy variable for counties with a change of 0.05 meters or more between the time periods. Calculate how many people currently live in these counties along with the mean value of median income and poverty rate for those areas._
+**Task 10** _Create a dummy variable for counties with a change of 0.05 meters or more between the time periods. Calculate how many people currently live in these counties along with the mean value of median income (medinc) and poverty rate (pov_pop_pct) for those areas._
 
 ```{r Task 10}
-#Your code here.
+
 ```
 
 **Task 11** _Create a one pargaraph summary of your results from tasks 9 and 10. What do you learn about how precipitation has changed in the last 70 years across the state of Washington? How would you describe the population affected by large drops in precipitation based on your results?_
@@ -123,16 +124,17 @@ To see who is affected by drops in precipitation, create a dummy variable that f
 {Your response here.}
 
 ### Challenge question
-Small multiples maps are often a helpful way to show change over time. See this page for more information about how these are created in `tmap`:
+Small multiples or multi-panel maps are often a helpful way to show change over time. See this page for more information about how these are created in `tmap`:
 
 * https://r-tmap.github.io/tmap/articles/basics_facets
 
-Using these tools, creat a small multiples map of your precipitation data for counties in a state of your choice for all 40 years in these two time periods. This means you will have one figure with 40 individual maps, all of the same state in different years. These maps should allow easy comparison across years and should be clearly labeled so that they could be interpreted by someone with no knowledge of this assignment. 
+Using these tools, create a small multiples map of your precipitation data for counties in a state of your choice for all 40 years in these two time periods. This means you will have one figure with 40 individual maps, all of the same state in different years. These maps should allow easy comparison across years and should be clearly labeled so that they could be interpreted by someone with no knowledge of this assignment. 
 
 In addition, describe two interesting trends you see in the figure you created.
 
-```{r challenge}
-#Your code here
+```{r challenge, dpi=300}
+
+
 ```
 
 {Your response here.}
